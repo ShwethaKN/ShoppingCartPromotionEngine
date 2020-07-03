@@ -1,0 +1,11 @@
+I had an intention to create a web page with just the Checkout Cart functionality.
+Hence create data in DB and models.But unfortunately due to my laptop issue kept the coding
+to a Console app with Test application
+
+CartData is a static class with mock data for 3 different scenarios mentioned in the problem statement.
+Modify code line 19 in Main method of Program.cs to call methods for different scenarios.
+scenario A - PrepareNoPromotionData()
+scenario B - PreparePromotionData()
+scenario C - PreparePromotionData2()
+
+Test project have test cases for all 3 scenarios.
