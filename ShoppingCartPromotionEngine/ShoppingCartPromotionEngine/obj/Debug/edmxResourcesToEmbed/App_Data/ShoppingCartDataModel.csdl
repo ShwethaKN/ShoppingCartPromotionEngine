@@ -1,0 +1,115 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="ShoppingCartDBModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+  <EntityType Name="Cart">
+    <Key>
+      <PropertyRef Name="Cart_Id" />
+    </Key>
+    <Property Name="Cart_Id" Type="Int32" Nullable="false" />
+    <Property Name="Order_Id" Type="Int32" Nullable="false" />
+    <NavigationProperty Name="Order" Relationship="Self.FK_CartOrder" FromRole="Cart" ToRole="Order" />
+  </EntityType>
+  <EntityType Name="Customer">
+    <Key>
+      <PropertyRef Name="Customer_Id" />
+    </Key>
+    <Property Name="Customer_Id" Type="Int32" Nullable="false" />
+    <Property Name="Customer_Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Customer_Email" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Customer_Mobile" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Customer_DOB" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Customer_Gender" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+    <Property Name="Customer_Address" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+    <NavigationProperty Name="Orders" Relationship="Self.FK_CustomerOrder" FromRole="Customer" ToRole="Order" />
+  </EntityType>
+  <EntityType Name="Order">
+    <Key>
+      <PropertyRef Name="Order_Id" />
+    </Key>
+    <Property Name="Order_Id" Type="Int32" Nullable="false" />
+    <Property Name="Customer_Id" Type="Int32" />
+    <Property Name="BillingAddress" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="BillAmount" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
+    <Property Name="OrderPlacementDate" Type="DateTime" Nullable="false" Precision="3" />
+    <Property Name="OrderDeliveryDate" Type="DateTime" Nullable="false" Precision="3" />
+    <NavigationProperty Name="Carts" Relationship="Self.FK_CartOrder" FromRole="Order" ToRole="Cart" />
+    <NavigationProperty Name="Customer" Relationship="Self.FK_CustomerOrder" FromRole="Order" ToRole="Customer" />
+    <NavigationProperty Name="OrderLineItems" Relationship="Self.FK_OrderLineItemOrder" FromRole="Order" ToRole="OrderLineItem" />
+  </EntityType>
+  <EntityType Name="OrderLineItem">
+    <Key>
+      <PropertyRef Name="OrderLineItem_Id" />
+    </Key>
+    <Property Name="OrderLineItem_Id" Type="Int32" Nullable="false" />
+    <Property Name="Order_Id" Type="Int32" />
+    <Property Name="SKU_Id" Type="String" MaxLength="1" FixedLength="true" Unicode="false" Nullable="false" />
+    <Property Name="Product_Id" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="ProductName" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="ProductDescription" Type="String" MaxLength="Max" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="UnitPrice" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
+    <Property Name="Quantity" Type="Decimal" Precision="10" Scale="2" Nullable="false" />
+    <NavigationProperty Name="Order" Relationship="Self.FK_OrderLineItemOrder" FromRole="OrderLineItem" ToRole="Order" />
+  </EntityType>
+  <EntityType Name="Promotion">
+    <Key>
+      <PropertyRef Name="Promotion_Id" />
+    </Key>
+    <Property Name="Promotion_Id" Type="Int32" Nullable="false" />
+    <Property Name="Promotion_Code" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+    <Property Name="Code_Status" Type="Boolean" Nullable="false" />
+  </EntityType>
+  <Association Name="FK_CartOrder">
+    <End Role="Order" Type="Self.Order" Multiplicity="1" />
+    <End Role="Cart" Type="Self.Cart" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Order">
+        <PropertyRef Name="Order_Id" />
+      </Principal>
+      <Dependent Role="Cart">
+        <PropertyRef Name="Order_Id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_CustomerOrder">
+    <End Role="Customer" Type="Self.Customer" Multiplicity="0..1" />
+    <End Role="Order" Type="Self.Order" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Customer">
+        <PropertyRef Name="Customer_Id" />
+      </Principal>
+      <Dependent Role="Order">
+        <PropertyRef Name="Customer_Id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_OrderLineItemOrder">
+    <End Role="Order" Type="Self.Order" Multiplicity="0..1" />
+    <End Role="OrderLineItem" Type="Self.OrderLineItem" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Order">
+        <PropertyRef Name="Order_Id" />
+      </Principal>
+      <Dependent Role="OrderLineItem">
+        <PropertyRef Name="Order_Id" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityContainer Name="ShoppingCartDBEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Carts" EntityType="Self.Cart" />
+    <EntitySet Name="Customers" EntityType="Self.Customer" />
+    <EntitySet Name="Orders" EntityType="Self.Order" />
+    <EntitySet Name="OrderLineItems" EntityType="Self.OrderLineItem" />
+    <EntitySet Name="Promotions" EntityType="Self.Promotion" />
+    <AssociationSet Name="FK_CartOrder" Association="Self.FK_CartOrder">
+      <End Role="Order" EntitySet="Orders" />
+      <End Role="Cart" EntitySet="Carts" />
+    </AssociationSet>
+    <AssociationSet Name="FK_CustomerOrder" Association="Self.FK_CustomerOrder">
+      <End Role="Customer" EntitySet="Customers" />
+      <End Role="Order" EntitySet="Orders" />
+    </AssociationSet>
+    <AssociationSet Name="FK_OrderLineItemOrder" Association="Self.FK_OrderLineItemOrder">
+      <End Role="Order" EntitySet="Orders" />
+      <End Role="OrderLineItem" EntitySet="OrderLineItems" />
+    </AssociationSet>
+  </EntityContainer>
+</Schema>
